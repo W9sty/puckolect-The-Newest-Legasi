@@ -1,0 +1,36 @@
+//////////////////////обьявляем переменные
+int power = 100;
+int teamColor;
+int enemyColor;
+/////////////коэфиценты сепаратора
+float proverka_angle;
+float errOld_separator;
+float kP_separator = 2;
+float ki_separator = 0.2;//38
+float kd_separator = 12;
+float iseparator;
+///////////////////////коэфиценты для повороота по гироскопу
+float errOld_angle;
+float kP_angle = 3;
+float ki_angle = 0;
+float kd_angle = 0;
+float iangle;
+///////////////////////////коэфиценты для выравнивания по гиродатчику
+float errOld_angle1;
+float ki_angle1 = 0;// 1.1
+float kP_angle1 = 0.3; // 1.1
+float kd_angle1 = 0;
+float iangle1;
+/////////////////////перепенные значений поля
+/////////////////////значение красного на поле
+float r_red = 156.84;
+float g_red = 58.28;
+float b_red = 54.01;
+///////////////значение синего на поле
+float r_blue = 66.14;
+float g_blue = 94.34;
+float b_blue = 103.38;
+
+//////////////////////////////создаем новые переменные
+float LastColor;
+float angle_target = 0;

@@ -1,0 +1,36 @@
+////////////////////////////////////////работаем с датчиком света)))
+#include <HardwareSerial.h>
+Adafruit_TCS34725softi2c tcs = Adafruit_TCS34725softi2c(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X, 9, 21  );
+/////////////специальная библиотека для датчика цвета и его инициализация
+#include <SoftwareSerial.h>
+SoftwareSerial colorSensorSerial(A2, A2);
+/////////////////////////функция для работы с датчиком цвета
+int puckColor = 0;
+int read_puck_color() {
+  while (colorSensorSerial.available())
+  {
+    byte tx = colorSensorSerial.read();
+    puckColor = tx;
+  }
+  return puckColor;
+}
+//////////////////////////////////////////////////////функция для определения цвета поля
+int read_field_color()
+{
+  float red, green, blue;
+  tcs.getRGB(&red, &green, &blue);
+  //////////////настройка цвета
+  Serial.println(red);
+  Serial.println(green);
+  Serial.println(blue);
+  
+
+  Serial.println(proverka_angle);
+  //////////////сама функция
+  if (abs(r_red - red) < 80 && abs(b_red - blue) < 80 && abs(g_red - green ) < 80)
+    return 1;
+  else if (abs(r_blue - red) < 80 && abs(b_blue - blue) < 80  && abs(g_blue - green) < 80 )
+    return 2;
+  else
+    return 0;
+}

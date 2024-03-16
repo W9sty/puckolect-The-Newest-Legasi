@@ -1,0 +1,86 @@
+////////////////обьявляем библиотеки.................
+#include <SparkFun_BNO080_Arduino_Library.h>
+#include <Wire.h>
+#include <Adafruit_TCS34725softi2c.h>
+#include <Prizm_Controller.h>
+#include <Prizm_DC_Expansion.h>
+#include <Prizm_Expansion.h>
+#include <Prizm_Servo_Expansion.h>
+#include <Prizm_TeleOp.h>
+#include <Prizm_Utils.h>
+#include "variable.h"/////////////вкладка со всеми переменными
+#include "polygoncolor.h"///////////определяем цвет полигона а также функции для работы с датчиком
+#include "separator.h"//////////////функции сортировки,защиты от застреваний
+#include "openbaze.h"////////////////////////открываем серовпривод на базе
+#include "gyro.h"//////////////////////все функции гиродатчика
+#include "forvard_motorencoder_and_touch.h"/////////////////////все проезды по энкодерам и кнопкам
+//////////////////////////
+void setup() {
+
+  //можно запустить без кнопки призмы
+  Prizm.begin(DO_NOT_WAIT_FOR_START_BUTTON); 
+  /////////////юарты для датчиков
+  Wire.begin();
+  tcs.begin();
+  myIMU.begin();
+  Wire.setClock(400000);
+  Serial.begin(115200);
+  colorSensorSerial.begin(19200);
+  myIMU.enableRotationVector(50);
+  ///////////////////инициализация портов
+  delay(200);
+  secondDcExpansion.setDirection(1,  Direction::REVERSE);
+  pinMode( 5 , INPUT_PULLUP);
+  pinMode( 4 , INPUT_PULLUP);
+  pinMode( 3 , INPUT_PULLUP);
+  delay(500);
+
+  //povorot_po_giroskopy(90);
+  //zaxvat();
+  //////////////выстовляем серву в начальное положение
+  Prizm.ServoController.setPosition(1, 70);
+///////////////определение цвета вашей команды
+  read_field_color();
+  while (digitalRead(5));
+  teamColor = read_field_color();
+  if (teamColor == 1)
+  {
+    enemyColor = 2;
+  }
+  else
+  {
+    if (teamColor == 2)
+    {
+      enemyColor = 1;
+    }
+  }
+}
+
+void znach()
+{
+  float red, green, blue;
+  Serial.println(red);
+  Serial.println(green);
+  Serial.println(blue);
+}
+////////////////включаем мотор для щеток
+void zaxvat()
+{
+  Prizm.MotorController.setPower(2, 100);
+}
+unsigned long long xui = millis();
+long g2 = 140000;
+void loop()
+{ 
+   if(millis() - xui > g2 )/////////////едем на базу по камере
+   {
+
+   }
+  ///////////////////основные действия , по рандому
+    zaxvat();
+    sort();
+    otkritie_baza();
+    dvigenie_po_knopkam();    
+    povorot_po_giroskopy(random(-180, 180));  
+}
+////////////////////конец

@@ -1,0 +1,18 @@
+bool waiting = 0;
+int fleks;
+/////////////////////робот открывает серво привод и выбрасывает шайбы если видит свой цвет
+void otkritie_baza()
+{
+
+  if ( teamColor == read_field_color())
+  {
+    waiting == 1;
+    fleks == 1;
+    Prizm.ServoController.setPosition(1, 102);
+  }
+  else
+  {
+    Prizm.ServoController.setPosition(1, 83);
+     fleks == 0;
+  }
+}

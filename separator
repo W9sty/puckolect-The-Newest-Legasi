@@ -1,0 +1,79 @@
+/////////////////////////////удержание положения мотора с помощью пид регулятора и поворот на заданное кол-во градусов
+#include <HardwareSerial.h>
+float err1;
+float degreesSort;
+unsigned long long oldTime1 = millis();
+void uderganie_pologenia(int degrees1)  
+{
+  unsigned long long deltaTime1 = millis() - oldTime1;
+  err1 = degrees1 * 2 - Prizm.MotorController.getCurrentPosition(1);
+  iseparator = iseparator + err1 * deltaTime1;
+  if (iseparator > 25)
+    iseparator = 25;
+  if (iseparator < -25)
+    iseparator = -25;
+  float u = (err1 * kP_separator ) + (err1 - errOld_separator) / deltaTime1 * kd_separator + iseparator * ki_separator * deltaTime1;
+  errOld_separator = err1;
+  if ( u > 100)
+    u = 100;
+  if ( u < -100)
+    u = -100;
+  Prizm.MotorController.setPower(1, u);
+  oldTime1 = millis();
+  delay(1);
+}
+
+////////////////////////защита от застреваний шайб в сепараторе
+long t1;
+void zachita()
+{
+  long g1 = 1000;
+  if (millis() > t1 + g1)
+  {
+    if (LastColor == teamColor)
+    {
+      degreesSort -= 120;
+    }
+    if (LastColor == enemyColor)
+    {
+      degreesSort += 120;
+    }
+    t1 = millis();
+  }
+  if (err1 < 35 && err1 > -(35))
+  {
+    t1 = millis();
+  }
+}
+
+////////////переменные для работы со временем
+long timeSort;
+///////////////////////сортировка шайб на пид регуляторе
+void sort()
+{
+  //for(;;)
+  //{
+  //   Serial.println(read_field_color());
+  // }
+  zachita();
+  uderganie_pologenia(degreesSort);
+  int color = read_puck_color();
+  if (teamColor == 1 || teamColor == 2)
+  {
+    if (millis() - timeSort > 450 && err1 < 35 && err1 > -(35))
+    {
+      if (color == teamColor)
+      {
+        LastColor = color;
+        degreesSort += 120;
+        timeSort = millis();
+      }
+      else if (color == enemyColor)
+      {
+        LastColor = color;
+        degreesSort -= 120;
+        timeSort = millis();
+      }
+    }
+  }
+}

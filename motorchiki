@@ -1,0 +1,61 @@
+//////////////////////////////////////движение в перед пока робот кнопками не увидит стенку
+#include <HardwareSerial.h>
+void dvigenie_po_knopkam()
+{ 
+  secondDcExpansion.resetEncoder(1);
+  secondDcExpansion.resetEncoder(2);
+  long t = millis();
+  int g = 2000;
+  while (digitalRead(3) && digitalRead(4) && millis() < t + g)
+  {
+    // viravnivaie_dla_knopock();
+    sort();
+    otkritie_baza();
+    secondDcExpansion.setPowers(power, power);
+  }
+  secondDcExpansion.setPowers(0, 0);
+}
+////////////переменные для проезда по энкодерам
+float diameter = 10;
+float enc = 480;
+////////////////////////////////////////проезд вперед по энкодерам на заданое кол-во см на пид регуляторе
+void vpered_poencoderam(float target_cm)
+{
+  float angle = angle_target;
+  secondDcExpansion.resetEncoder(1);
+  secondDcExpansion.resetEncoder(2);
+  int t = millis();
+  int g = 2000;
+  float target_encoder = target_cm / (diameter * PI) * enc;
+  secondDcExpansion.resetEncoder(1);
+  secondDcExpansion.resetEncoder(2);
+  while (secondDcExpansion.getCurrentPosition(1) + secondDcExpansion.getCurrentPosition(2) / 2 < target_encoder && millis() < t + g)
+  {
+    sort();
+    otkritie_baza();
+    if (myIMU.dataAvailable() == true)
+      yaw = (myIMU.getYaw()) * 180 / PI;
+    float err = angle - yaw;
+    float u = (err * kP_angle ) + (err - errOld_angle) * kd_angle + iangle;
+    errOld_angle = err;
+    if (err > 180)
+      err = err - 360;
+    if (err < -180)
+      err = err + 360;
+    secondDcExpansion.setPowers(power + u, power - u);
+    delay(1);
+  }
+  secondDcExpansion.setPowers(0, 0);
+}
+float err1111111;
+  float u1111;
+  float kp11111 = 1;
+void rastoyanie()
+{
+  if(rastoyanie < 10)
+  {
+    err + 20 = 0 + rasstoyanie;
+      u1111 = err * kp11111;
+  secondDcExpansion.setPowers(u1111,u1111);
+  }
+}

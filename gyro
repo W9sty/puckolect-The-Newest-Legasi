@@ -1,0 +1,55 @@
+///////////////выравнивание по гиродатчику для езды вперед по кнопкам
+BNO080 myIMU;//////////////обьявяем гиро
+PrizmDCExpansion secondDcExpansion(2);////////////порт
+unsigned long long oldTime = millis();
+float yaw;
+void viravnivaie_dla_knopock()
+{
+  float angle = angle_target;
+  if (myIMU.dataAvailable() == true)
+    yaw = (myIMU.getYaw()) * 180 / PI;
+  unsigned long long deltaTime = millis() - oldTime;
+  float err = angle - yaw;
+  float u = (err * kP_angle1 ) + (err - errOld_angle1) / deltaTime * kd_angle1 + iangle1 * ki_angle1;
+  iangle1 = iangle1 + err * deltaTime;
+  errOld_angle1 = err;
+  if (err > 180)
+    err = err - 360;
+  if (err < -180)
+    err = err + 360wer + u);
+  oldTime = millis();
+  delay(1);
+}
+/////////////////////////////////////////поворот по гироскопу на заданое кол-во градусов на пид регуляторе
+void povorot_po_giroskopy(float angle)
+{
+  float err;
+  angle_target = angle;
+  proverka_angle = angle;
+  secondDcExpansion.resetEncoder(1);
+  secondDcExpansion.resetEncoder(2);
+  long t = millis();
+  long g = 2000;
+  do {
+    if (myIMU.dataAvailable() == true)
+      yaw = (myIMU.getYaw()) * 180.0 / PI;
+   err = angle - yaw;
+    iangle = iangle + err * ki_angle;
+    if (err > 180)
+       err = err - 360;
+    if (err < -180)
+      err = err + 360;
+    float u = (err * kP_angle ) + (err - errOld_angle) * kd_angle;
+    errOld_angle = err;
+
+    if(fleks == 1)
+    {
+      if(u > 40) u = 40;
+      if(u < -40) u = -40;
+    }
+    secondDcExpansion.setPower(1, u);
+    secondDcExpansion.setPower(2, -u);
+    sort();
+    otkritie_baza();
+  } while (abs(err) > 8 && millis() < t + g);
+}
